@@ -28,6 +28,7 @@ export default function Home() {
   };
 
   const fetchPreview = async (targetUrl: string) => {
+    if (!targetUrl) return;
     setLoading(true);
     setError("");
     setVideoData(null);
@@ -37,81 +38,122 @@ export default function Home() {
       const data = await res.json();
       setVideoData(data);
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 flex flex-col items-center p-4">
-      {/* Header */}
-      <div className="w-full max-w-md my-8 text-center">
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">VidFetch</h1>
-        <p className="text-slate-500">Paste a link to save to gallery</p>
+    <main className="min-h-screen gradient-bg flex flex-col items-center px-4 py-8 md:py-12">
+      {/* App Header */}
+      <div className="w-full max-w-md text-center mb-10 space-y-2">
+        <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-blue-600/10 mb-4 ring-1 ring-blue-600/20 shadow-inner">
+          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+        </div>
+        <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">VidFetch</h1>
+        <p className="text-slate-500 dark:text-slate-400 font-medium">Download high-quality videos instantly</p>
       </div>
 
-      <div className="w-full max-w-md space-y-6">
+      <div className="w-full max-w-md flex-1 flex flex-col gap-6">
         {/* Input Section */}
-        <div className="flex gap-2">
+        <div className="glass p-1.5 rounded-[2rem] shadow-2xl flex items-center gap-2 ring-1 ring-black/5 dark:ring-white/10">
           <input
             type="text"
-            placeholder="Paste TikTok, IG, or X link..."
-            className="flex-1 p-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
+            placeholder="Paste video link here..."
+            className="flex-1 bg-transparent px-5 py-4 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none text-lg"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && fetchPreview(url)}
           />
           <button
             onClick={() => fetchPreview(url)}
             disabled={!url || loading}
-            className="bg-blue-600 text-white px-6 py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 active:scale-95 transition-all disabled:opacity-50"
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white p-4 rounded-[1.5rem] transition-all active:scale-95 shadow-lg shadow-blue-500/30 flex items-center justify-center min-w-[64px]"
           >
-            {loading ? "..." : "Fetch"}
+            {loading ? (
+              <svg className="animate-spin h-6 w-6 text-white" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            )}
           </button>
         </div>
 
-        {/* Error Message */}
+        {/* Error Notification */}
         {error && (
-          <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-medium">
-            ⚠️ {error}
+          <div className="animate-in slide-in-from-top-2 fade-in duration-300 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-sm font-semibold border border-red-100 dark:border-red-900/30 flex items-center gap-3">
+            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {error}
           </div>
         )}
 
-        {/* Stage 2: The Preview Card */}
+        {/* Preview Content */}
         {videoData && (
-          <div className="bg-white rounded-3xl p-4 shadow-xl border border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-100 mb-4">
+          <div className="glass rounded-[2.5rem] p-5 shadow-2xl border border-white/20 dark:border-white/5 animate-in fade-in zoom-in-95 duration-500 overflow-hidden">
+            <div className="relative aspect-video rounded-3xl overflow-hidden bg-slate-200 dark:bg-slate-800 mb-6 group">
               <img
                 src={videoData.thumbnail}
                 alt="Thumbnail"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              <div className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded-md text-xs font-mono">
-                {videoData.source}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
+                 <span className="bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                  {videoData.source}
+                </span>
               </div>
             </div>
 
-            <h2 className="text-lg font-bold text-slate-800 line-clamp-2 mb-4">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white leading-tight mb-6 line-clamp-2 px-1">
               {videoData.title}
             </h2>
 
             <a
               href={`${API_BASE}/download?url=${encodeURIComponent(url)}`}
-              className="block w-full text-center bg-slate-900 text-white py-4 rounded-2xl font-bold text-lg hover:bg-slate-800 transition-colors"
+              className="group relative flex items-center justify-center w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-5 rounded-[1.8rem] font-bold text-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-95"
             >
-              Download Video
+              <span className="relative z-10 flex items-center gap-2">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download Video
+              </span>
             </a>
+          </div>
+        )}
+
+        {/* Info Cards */}
+        {!videoData && !loading && (
+          <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+            <div className="glass p-4 rounded-3xl text-center space-y-2 border-white/10">
+              <div className="text-2xl">⚡</div>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Fast</p>
+            </div>
+            <div className="glass p-4 rounded-3xl text-center space-y-2 border-white/10">
+              <div className="text-2xl">💎</div>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">HD Quality</p>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Footer Instructions */}
-      {!videoData && !loading && (
-        <div className="mt-auto py-8 text-slate-400 text-sm text-center">
-          <p>Works with Instagram, TikTok, and X</p>
-          <p className="mt-1">Built by Rule Creationz</p>
-        </div>
-      )}
+      {/* Footer */}
+      <footer className="mt-auto pt-10 pb-4 text-center">
+        <p className="text-slate-400 dark:text-slate-500 text-xs font-medium">
+          Supported: TikTok • Instagram • X
+        </p>
+        <p className="mt-2 text-slate-300 dark:text-slate-700 text-[10px] uppercase tracking-[0.2em]">
+          Rule Creationz Premium
+        </p>
+      </footer>
     </main>
   );
 }
