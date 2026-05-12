@@ -1,7 +1,7 @@
 {
-  "name": "SMVD PWA",
+  "name": "SMVD",
   "short_name": "SMVD",
-  "description": "SMVD Progressive Web Application",
+  "description": "Social Media Video Downloader",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
