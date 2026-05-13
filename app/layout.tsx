@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SMVD PWA",
-  description: "SMVD Progressive Web Application",
+  title: "SMVD",
+  description: "Download any video from any platform",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
