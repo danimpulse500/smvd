@@ -8,7 +8,7 @@ function VidFetchApp() {
   const [videoData, setVideoData] = useState<any>(null);
   const [error, setError] = useState("");
 
-  const API_BASE = "http://localhost:8000";
+  const API_BASE = "https://smvd-server.onrender.com";
   const searchParams = useSearchParams();
 
   const extractUrl = (text: string) => {
